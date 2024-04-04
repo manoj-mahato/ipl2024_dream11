@@ -21,8 +21,8 @@ def main():
     st.title("IPL 2024: Dream11 group statistics")
     #st.write("Hello, world!")
     
-    match_df = pd.read_excel("F:\\ipl2024\\contest.xlsx")
-    member_df = pd.read_excel("F:\\ipl2024\\contestent.xlsx")
+    match_df = pd.read_excel("./data/contest.xlsx")
+    member_df = pd.read_excel("./data/contestent.xlsx")
     
     pre_obj = PreProcessing()
     plot_obj = PlotPlotly()
