@@ -8,8 +8,9 @@ import pandas as pd
 
 class PreProcessing:
         
-    def main_processing(self, match_df, member_df):
-        
+    def main_processing(self, df1, df2):
+        match_df = df1.copy()
+        member_df = df2.copy()
         member_df['Member_name'] = member_df['Member_name'].replace({'ANILK6782RS(T1)':'FallenNoob(T1)','FallenNoob(T2)':'Krishna(T1)'})
         member_df['Member_name'] = member_df['Member_name'].str[0:-4]
         ##### group based on participant name
