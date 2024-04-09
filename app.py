@@ -32,8 +32,8 @@ def main():
     plot_obj = PlotPlotly()
     upload_obj = UploadData()
     
-    match_df = pd.read_excel("F:\ipl2024\prod_v1\ipl2024\data\contest.xlsx")
-    member_df = pd.read_excel("F:\ipl2024\prod_v1\ipl2024\data\contestent.xlsx")
+    match_df = pd.read_excel("./data/contest.xlsx")
+    member_df = pd.read_excel("./data/contestent.xlsx")
     if selected == "Home":
         
         st.title("IPL 2024: Dream11 group statistics")
