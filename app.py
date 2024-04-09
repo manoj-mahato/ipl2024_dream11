@@ -32,8 +32,8 @@ def main():
     plot_obj = PlotPlotly()
     upload_obj = UploadData()
     
-    match_df = pd.read_excel("./data/contest.xlsx")
-    member_df = pd.read_excel("./data/contestent.xlsx")
+    match_df = pd.read_excel("F:\ipl2024\prod_v1\ipl2024\data\contest.xlsx")
+    member_df = pd.read_excel("F:\ipl2024\prod_v1\ipl2024\data\contestent.xlsx")
     if selected == "Home":
         
         st.title("IPL 2024: Dream11 group statistics")
@@ -66,29 +66,18 @@ def main():
                 st.plotly_chart(fig5,use_container_width=True)
                 
         st.write('---')
-        st.write('#### Net amount trend of participant(s)')
-        # Function to generate line plot for selected participants
-        def generate_line_plot(selected_participants):
-            fig = go.Figure()
-        
-            for participant in selected_participants:
-                filtered_df = merged_net[merged_net['Member_name'] == participant]
-                filtered_df['Cum_sum'] = filtered_df['Net_winning'].cumsum()
-                fig.add_trace(go.Scatter(x=filtered_df['Match_no'], y=filtered_df['Cum_sum'],
-                                         mode='lines+markers', name=participant))
-        
-            fig.update_layout(xaxis_title='Match no', yaxis_title='Net amount')
-            fig.update_layout(xaxis=dict(tickvals=merged_net['Match_no']))
-            fig.add_hline(y=0, line_width=0.5, line_color='red')
-            st.plotly_chart(fig)
-            
-        participants = merged_net['Member_name'].unique()
-    
+        st.write('#### Net amount trend of participant(s)') 
+        participants = merged_net['Member_name'].unique()   
         # Dropdown menu to select participants (multiple)
-        selected_participants = st.multiselect('Select Participant(s)', participants, default=participants[0])
-    
-        # Generate line plot for selected participants
-        generate_line_plot(selected_participants)
+        selected_participants = st.multiselect('Select Participant(s)', participants, default=participants[0], key='net_amount')
+        fig4 = plot_obj.generate_line_plot(merged_net, selected_participants)
+        st.plotly_chart(fig4)
+        st.write('---')
+        st.write('#### Rank trend of participant(s) with no of participant')
+        selected_participants2 = st.multiselect('Select Participant(s)', participants, default=participants[0], key='rank')
+        fig6 = plot_obj.participant_rank_trend(merged_net, selected_participants2)
+        st.plotly_chart(fig6)
+
         
     if selected == "Upload Data":
         with st.container():
@@ -118,7 +107,7 @@ def main():
                     st.dataframe(entered_details, hide_index=True)
         
             with right_column:
-                uploaded_file = st.file_uploader("##### Upload an Screenshot of Leaderboard", type=["png", "jpg", "jpeg"])
+                uploaded_file = st.file_uploader("##### Upload Screenshot of Leaderboard", type=["png", "jpg", "jpeg"])
             
                 if uploaded_file is not None:
                     temp_member = upload_obj.member(uploaded_file)
