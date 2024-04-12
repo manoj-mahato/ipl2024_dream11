@@ -14,23 +14,16 @@ import time
 import streamlit as st
 
 class UploadData:
-    
-    def member(self, uploaded_file):
-        reader = easyocr.Reader(['en'])
+    @st.cache_data
+    def member(_self, uploaded_file):
         file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
         # Read the image from the NumPy array
         image = cv2.imdecode(file_bytes, 1)
         gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         thresh, binary_img = cv2.threshold(gray_img, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
 
-        start_time = time.time()
-        reader = easyocr.Reader(['en'], gpu= False)
-        end_time = time.time()
-        st.write(f"time taken to load easyOCR: {end_time - start_time}")
-        start_time = time.time()
+        reader = easyocr.Reader(['en'])
         result = reader.readtext(binary_img)
-        end_time = time.time()
-        st.write(f"time taken to extract text: {end_time - start_time}")
         all_text = [i[1] for i in result]
         for text in all_text:
             if 'Dipak Warriors' in text:

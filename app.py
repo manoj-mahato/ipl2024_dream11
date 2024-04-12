@@ -13,12 +13,12 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import warnings
 warnings.filterwarnings("ignore")
-import easyocr
 import cv2
 
 from preprocessing import PreProcessing
 from plot import PlotPlotly
 from upload_data import UploadData
+
 
 def main():
     st.set_page_config(page_title='ipl24_dream11',page_icon=':tada:', layout='wide')
@@ -32,10 +32,9 @@ def main():
     plot_obj = PlotPlotly()
     upload_obj = UploadData()
     
-    #match_df = pd.read_excel("F:\ipl2024\prod_v1\ipl2024\data\contest.xlsx")
-    #member_df = pd.read_excel("F:\ipl2024\prod_v1\ipl2024\data\contestent.xlsx")
     match_df = pd.read_excel("./data/contest.xlsx")
     member_df = pd.read_excel("./data/contestent.xlsx")
+
     if selected == "Home":
         
         st.title("IPL 2024: Dream11 group statistics")
@@ -104,17 +103,33 @@ def main():
                 entry_fee = st.number_input('Entry Fee', min_value=0, value= 20, step=1)
                 entered_details = pd.DataFrame({'Match_no':match_no,'Team1':team1,'Team2':team2,
                                                 'Winner':winner,'Entry':entry_fee}, index=[0])
-                if st.button('Submit'):
+                
+                
+                if 'entered_details' not in st.session_state:                    
+                    st.session_state['entered_details'] = pd.DataFrame()   
+                def match_details():
                     st.write('### Entered details:')
-                    st.dataframe(entered_details, hide_index=True)
+                    st.dataframe(st.session_state['entered_details'], hide_index=True)
+                    
+                if st.button('Submit'):
+                    st.session_state['entered_details'] = entered_details
+                
+                if not st.session_state['entered_details'].empty:
+                    match_details()
         
             with right_column:
                 uploaded_file = st.file_uploader("##### Upload Screenshot of Leaderboard", type=["png", "jpg", "jpeg"])
-            
+                
+                if 'data_frame' not in st.session_state:                   
+                    st.session_state["data_frame"]= pd.DataFrame()
+                    
+                
                 if uploaded_file is not None:
                     temp_member = upload_obj.member(uploaded_file)
                     temp_member['Match_no'] = match_no
-                    edited_df = st.data_editor(temp_member,hide_index= True, num_rows= "dynamic")                  
+                    st.session_state["data_frame"] = temp_member.copy()
+                    edited_df = st.data_editor(st.session_state["data_frame"],hide_index= True, num_rows= "dynamic")
+                    #edited_df.on_change(lambda df: st.session_state.update({"data_frame": df}))
                     prize_pool = edited_df['Winning_amount'].sum()
                     member_count = edited_df['Member_name'].count()
                     st.write("##### Is the fetched data correct? If not then edit the above table and click Yes")
@@ -125,7 +140,7 @@ def main():
                         member_df = member_df._append(edited_df, ignore_index=True)
                         match_df.to_excel("./data/contest.xlsx", index=False)
                         member_df.to_excel("./data/contestent.xlsx", index=False)
-                        st.success("Data saved.")
+                        st.success("Data saved.")   
     
 
     
